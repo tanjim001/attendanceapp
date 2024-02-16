@@ -10,7 +10,7 @@ class AttendanceService extends ChangeNotifier {
   final SupabaseClient _supabase = Supabase.instance.client;
 
   AttendanceModel? attendanceModel;
-  String _todayDate = DateFormat("dd MMMM yyyy").format(DateTime.now());
+  final String _todayDate = DateFormat("dd MMMM yyyy").format(DateTime.now());
   bool _isLoading = false;
 
   bool get isLoading => _isLoading;

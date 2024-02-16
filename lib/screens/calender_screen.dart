@@ -105,7 +105,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
                                     children: [
                                       "checkout".text.size(24).semiBold.make(),
                                       10.heightBox,
-                                      attendanceData.checkout!.text
+                                      (attendanceData.checkout ?? "__/__").text
                                           .size(20)
                                           .semiBold
                                           .color(Vx.gray600)
