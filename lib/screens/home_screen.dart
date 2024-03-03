@@ -13,10 +13,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<IconData> navigationIcons = [
-    FontAwesomeIcons.solidCalendarDays,
-    FontAwesomeIcons.check,
-    FontAwesomeIcons.solidUser
+  List<ImageIcon>navigationIcons = [
+    const ImageIcon(AssetImage("assets/calender.png")),
+    const ImageIcon(AssetImage("assets/check.png")),
+    const ImageIcon(AssetImage("assets/profile.png")),
   ];
 
   int currentIndex = 1;
@@ -51,9 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
           children: List.generate(
             navigationIcons.length,
             (index) => IconButton(
-              icon: FaIcon(navigationIcons[index]),
+              icon: navigationIcons[index],
               color: currentIndex == index ? Colors.redAccent : Colors.black,
-              iconSize: currentIndex == index ? 35 : 30,
+              iconSize: currentIndex == index ? 30 : 25,
               autofocus: true,
               onPressed: () {
                 setState(() {

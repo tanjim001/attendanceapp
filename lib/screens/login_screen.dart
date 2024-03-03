@@ -30,9 +30,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: Colors.redAccent,
                 borderRadius:
                     BorderRadius.only(bottomRight: Radius.circular(70))),
-            child: Column(
+            child: const Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Icon(
                   Icons.qr_code_scanner,
                   color: Colors.white,
@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 20,
                 ),
                 Text(
-                  "FAANG",
+                  "Webinuxs",
                   style: TextStyle(
                       fontSize: 25,
                       color: Colors.white,
@@ -58,34 +58,41 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                TextField(
-                  decoration: const InputDecoration(
-                    label: Text("Employee Email ID"),
-                    prefixIcon: Icon(Icons.person),
-                    border: OutlineInputBorder(),
+                SizedBox(
+                  height: 60,
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      
+                      label: Text("Email"),
+                      prefixIcon: Icon(Icons.person),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+                    ),
+                    controller: _emailController,
                   ),
-                  controller: _emailController,
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                TextField(
-                  decoration: const InputDecoration(
-                    label: Text("Password"),
-                    prefixIcon: Icon(Icons.lock),
-                    border: OutlineInputBorder(),
+                SizedBox(
+                  height: 60,
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      label: Text("Password"),
+                      prefixIcon: Icon(Icons.lock),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+                    ),
+                    controller: _passwordController,
+                    obscureText: true,
                   ),
-                  controller: _passwordController,
-                  obscureText: true,
                 ),
                 const SizedBox(
-                  height: 30,
+                  height: 60,
                 ),
                 Consumer<AuthService>(
                   builder: (context, authServiceProvider, child) {
                     return SizedBox(
-                      height: 60,
-                      width: double.infinity,
+                      height: 40,
+                    width: screenWidth,
                       child: authServiceProvider.isLoading
                           ? const Center(
                               child: CircularProgressIndicator(),
@@ -100,10 +107,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.redAccent,
                                   shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30))),
+                                      borderRadius: BorderRadius.circular(12))),
                               child: const Text(
                                 "LOGIN",
-                                style: TextStyle(fontSize: 20),
+                                style: TextStyle(fontSize: 20,color: Colors.white),
                               ),
                             ),
                     );
@@ -112,14 +119,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-                TextButton(
+                /*TextButton(
                     onPressed: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const RegisterScreen()));
                     },
-                    child: const Text("Are you a new Employee ? Register here"))
+                    child: const Text("Are you a new Employee ? Register here"))*/
               ],
             ),
           ),

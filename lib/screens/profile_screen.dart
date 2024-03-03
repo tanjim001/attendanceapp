@@ -28,30 +28,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Row(mainAxisAlignment: MainAxisAlignment.end,children: [IconButton(onPressed: (){Provider.of<AuthService>(context,listen: false).signOut();}, icon: Icon(Icons.logout))],),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        Provider.of<AuthService>(context, listen: false)
+                            .signOut();
+                      },
+                      icon: Icon(Icons.logout))
+                ],
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(Icons.person, size: 50, color: Colors.white)
                       .box
-                      .p32.rounded
+                      .p32
+                      .rounded
                       .color(Colors.redAccent)
                       .make(),
-                  
                 ],
               ).box.p32.make(),
               "EmployeeID: ${dbservice.userModel?.employeeId}".text.make(),
               20.heightBox,
               TextField(
-                    controller: namecontroller,
-                    decoration: const InputDecoration(
-                        label: Text("Full name"), border: OutlineInputBorder()),
-                  ).box.margin(const EdgeInsets.only(left: 30,right: 30)).make(),
+                controller: namecontroller,
+                decoration: const InputDecoration(
+                    label: Text("Full name"), border: OutlineInputBorder()),
+              ).box.margin(const EdgeInsets.only(left: 30, right: 30)).make(),
               30.heightBox,
               dbservice.allDepartment.isEmpty
                   ? const LinearProgressIndicator()
                   : Container(
-                    margin: const EdgeInsets.only(left: 30,right: 30),
+                      margin: const EdgeInsets.only(left: 30, right: 30),
                       width: double.infinity,
                       child: DropdownButtonFormField(
                         decoration:
@@ -72,17 +82,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         },
                       ),
                     ),
-                    80.heightBox,
+              80.heightBox,
               SizedBox(
-                width: 200,
-                height: 50,
                 child: ElevatedButton(
+                  style: ButtonStyle(
+                    // Set a custom shape for the button
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            10.0), // Adjust to your desired corner radius
+                      ),
+                    ),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.redAccent),
+                  ),
                   onPressed: () {
-                    dbservice.updateProfile(namecontroller.text.trim(), context);
+                    dbservice.updateProfile(
+                        namecontroller.text.trim(), context);
                   },
                   child: const Text(
-                    "Update Profile",
-                    style: TextStyle(fontSize: 20),
+                    "Update",
+                    style: TextStyle(fontSize: 20, color: Colors.white),
                   ),
                 ),
               ),

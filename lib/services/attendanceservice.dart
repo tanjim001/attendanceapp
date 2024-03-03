@@ -53,7 +53,7 @@ class AttendanceService extends ChangeNotifier {
         .toList();
   }
 
-  Future<void> markAttendance(BuildContext context) async {
+  Future<void> markAttendance(BuildContext context,String n) async {
     Map? getloction = await LocationService().initializeandGetLocation(context);
     if (getloction != null) {
       if (attendanceModel?.checkin == null) {
