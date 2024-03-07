@@ -1,84 +1,103 @@
+import 'dart:async';
+
 import 'package:attendenceapp/constants/constants.dart';
 import 'package:attendenceapp/models/attendance_model.dart';
+import 'package:attendenceapp/models/checkmodel.dart';
 import 'package:attendenceapp/services/locationservice.dart';
-import 'package:attendenceapp/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+
 class AttendanceService extends ChangeNotifier {
+  Attendance? _attendance;
+  ChecksModel? _checkModel;
+  Attendance? get attendance => _attendance;
+  ChecksModel? get checkModel=>_checkModel;
   final SupabaseClient _supabase = Supabase.instance.client;
-
-  AttendanceModel? attendanceModel;
   final String _todayDate = DateFormat("dd MMMM yyyy").format(DateTime.now());
-  bool _isLoading = false;
 
-  bool get isLoading => _isLoading;
-
-  set setLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
+    void updateData(Attendance data) {
+    _attendance = data;
+    notifyListeners(); // Notify listeners about the change
   }
 
-  String _attendanceHistoryMonth =
-      DateFormat("MMMM yyyy").format(DateTime.now());
-  String get attendanceHistoryMonth => _attendanceHistoryMonth;
-
-  set attendanceHistoryMonth(String value) {
-    _attendanceHistoryMonth = value;
-    notifyListeners();
-  }
-
-  Future<void> getTodayAttendance() async {
-    final List result = await _supabase
+  Future checktoadyattendance(BuildContext context) async {
+    Attendance? atten;
+    var s = await _supabase
         .from(Constants.attendance)
-        .select()
-        .eq("employee_id", _supabase.auth.currentUser!.id)
-        .eq('date', _todayDate);
-    if (result.isNotEmpty) {
-      attendanceModel = AttendanceModel.fromJson(result.first);
+        .select('*')
+        .eq('users', _supabase.auth.currentUser!.id)
+        .eq('date', _todayDate)
+        .maybeSingle();
+    if (s != null) {atten = Attendance.fromJson(s);updateData(atten);}
+    if (atten == null) {
+      await _supabase
+          .from(Constants.attendance)
+          .insert({'users': _supabase.auth.currentUser!.id, 'date': _todayDate})
+          .select('*')
+          .single();
+        s=await _supabase
+        .from(Constants.attendance)
+        .select('*')
+        .eq('users', _supabase.auth.currentUser!.id)
+        .eq('date', _todayDate)
+        .maybeSingle();
+        atten= Attendance.fromJson(s!);
+        updateData(atten);
     }
-    notifyListeners();
+   
+    
   }
 
-  Future<List<AttendanceModel>> getAttendanceHistory() async {
-    final List data = await _supabase
-        .from(Constants.attendance)
-        .select()
-        .eq('employee_id', _supabase.auth.currentUser!.id)
-        .textSearch('date', "'$attendanceHistoryMonth'", config: 'english')
-        .order('created_at', ascending: false);
-    return data
-        .map((attendance) => AttendanceModel.fromJson(attendance))
-        .toList();
+     void updateCheckData(ChecksModel data) {
+    _checkModel = data;
+    notifyListeners(); // Notify listeners about the change
   }
 
-  Future<void> markAttendance(BuildContext context,String n) async {
-    Map? getloction = await LocationService().initializeandGetLocation(context);
-    if (getloction != null) {
-      if (attendanceModel?.checkin == null) {
-        await _supabase.from(Constants.attendance).insert({
-          'employee_id': _supabase.auth.currentUser!.id,
-          'date': _todayDate,
+Future markdatafetch()async{
+  ChecksModel? ch;
+    var data = await _supabase
+        .from(Constants.check)
+        .select('*')
+        .eq('attendance', attendance!.id)
+        .isFilter('check_out', null)
+        .maybeSingle();
+    if (data != null) {
+      ch = ChecksModel.fromjson(data);
+      updateCheckData(ch);
+    }
+}
+
+
+  Future markAttendance(BuildContext context) async {
+    Map? getlocation =
+        await LocationService().initializeandGetLocation(context);
+    markdatafetch();
+
+    if (getlocation != null) {
+      if (checkModel == null || checkModel!.createat == null || checkModel!.checkout != null) {
+        await _supabase.from(Constants.check).insert({
           'check_in': DateFormat('HH:mm').format(DateTime.now()),
-          "check_in_location": getloction
+          'check_in_location': getlocation,
+          'attendance': attendance!.id,
         });
-      } else if (attendanceModel?.checkout == null) {
+        markdatafetch();
+        notifyListeners();
+      } else if (checkModel?.checkout == null &&
+          checkModel?.createdin != null) {
         await _supabase
-            .from(Constants.attendance)
+            .from(Constants.check)
             .update({
               'check_out': DateFormat('HH:mm').format(DateTime.now()),
-              "check_out_location": getloction
+              "check_out_location": getlocation
             })
-            .eq('employee_id', _supabase.auth.currentUser!.id)
-            .eq('date', _todayDate);
-      } else {
-        Utils.showSnackBar("You have already checked out today!", context);
+            .eq('attendance', attendance!.id)
+            .select();
+           _checkModel=null;
+        notifyListeners();
       }
-      await getTodayAttendance();
-    } else {
-      Utils.showSnackBar("unable to get loction!", context);
-      await getTodayAttendance();
     }
   }
 }

@@ -1,4 +1,6 @@
-import 'package:attendenceapp/models/dbmodel.dart';
+
+import 'package:attendenceapp/constants/style.dart';
+import 'package:attendenceapp/models/user_model.dart';
 import 'package:attendenceapp/services/auth_service.dart';
 import 'package:attendenceapp/services/db_service.dart';
 import 'package:flutter/material.dart';
@@ -13,16 +15,11 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  TextEditingController namecontroller = TextEditingController();
-  int selectedvalue = 0;
+  final TextEditingController namecontroller = TextEditingController(text: "");
 
   @override
   Widget build(BuildContext context) {
-    final dbservice = Provider.of<DbService>(context);
-    dbservice.allDepartment.isEmpty ? dbservice.getAllDepartment() : null;
-    namecontroller.text.isEmpty
-        ? namecontroller.text = dbservice.userModel?.name ?? ""
-        : null;
+   
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -32,80 +29,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   IconButton(
-                      onPressed: () {
-                        Provider.of<AuthService>(context, listen: false)
-                            .signOut();
-                      },
-                      icon: Icon(Icons.logout))
+                    onPressed: () => Provider.of<AuthService>(context, listen: false).signOut(),
+                    icon: const Icon(Icons.logout),
+                  ),
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.person, size: 50, color: Colors.white)
-                      .box
-                      .p32
-                      .rounded
-                      .color(Colors.redAccent)
-                      .make(),
+                  Stack(
+                    children: [
+                      const Icon(Icons.person, size: 50, color: Colors.white)
+                          .box
+                          .p32
+                          .rounded
+                          .color(Colors.redAccent)
+                          .make(),
+                      InkWell(child: "Add Profile pic".text.make()),
+                    ],
+                  ),
                 ],
               ).box.p32.make(),
-              "EmployeeID: ${dbservice.userModel?.employeeId}".text.make(),
-              20.heightBox,
-              TextField(
-                controller: namecontroller,
-                decoration: const InputDecoration(
-                    label: Text("Full name"), border: OutlineInputBorder()),
-              ).box.margin(const EdgeInsets.only(left: 30, right: 30)).make(),
-              30.heightBox,
-              dbservice.allDepartment.isEmpty
-                  ? const LinearProgressIndicator()
-                  : Container(
-                      margin: const EdgeInsets.only(left: 30, right: 30),
-                      width: double.infinity,
-                      child: DropdownButtonFormField(
-                        decoration:
-                            const InputDecoration(border: OutlineInputBorder()),
-                        value: dbservice.employeeDepartment ??
-                            dbservice.allDepartment.first.id,
-                        items:
-                            dbservice.allDepartment.map((DepartmentModel item) {
-                          return DropdownMenuItem(
-                              value: item.id,
-                              child: Text(
-                                item.title,
-                                style: const TextStyle(fontSize: 20),
-                              ));
-                        }).toList(),
-                        onChanged: (selectedValue) {
-                          dbservice.employeeDepartment = selectedValue;
-                        },
-                      ),
+              60.heightBox,
+              Consumer<DbService>(
+                builder: (context, dbservice, _) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        getStyledText("Joined",context),
+                        20.heightBox,
+                        getStyledText("Name: ${dbservice.userModel?.name??""}" ,context),
+                        20.heightBox,
+                        getStyledText("Role: ${dbservice.userModel?.role??""}",context),
+                        20.heightBox,
+                        getStyledText("Profession: ${dbservice.userModel?.profession??""}",context),
+                      ],
                     ),
-              80.heightBox,
-              SizedBox(
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    // Set a custom shape for the button
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            10.0), // Adjust to your desired corner radius
-                      ),
-                    ),
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.redAccent),
-                  ),
-                  onPressed: () {
-                    dbservice.updateProfile(
-                        namecontroller.text.trim(), context);
-                  },
-                  child: const Text(
-                    "Update",
-                    style: TextStyle(fontSize: 20, color: Colors.white),
-                  ),
-                ),
+                  );
+                },
+                
               ),
+              30.heightBox,
             ],
           ),
         ),
@@ -113,3 +79,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
+

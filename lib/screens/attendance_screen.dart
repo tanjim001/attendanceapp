@@ -4,7 +4,7 @@ import 'package:attendenceapp/services/db_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_to_act/slide_to_act.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:velocity_x/velocity_x.dart';
 import 'package:intl/intl.dart';
 
@@ -19,7 +19,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   final GlobalKey<SlideActionState> key = GlobalKey<SlideActionState>();
   @override
   void initState() {
-    Provider.of<AttendanceService>(context, listen: false).getTodayAttendance();
+    Provider.of<DbService>(context, listen: false).getprofiledata();
+    Provider.of<AttendanceService>(context, listen: false)
+        .checktoadyattendance(context);
     super.initState();
   }
 
@@ -28,6 +30,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     final attendanceservice = Provider.of<AttendanceService>(context);
+    final dbservice = Provider.of<DbService>(context);
+    //print(dbservice.getprofiledata());
 
     return SafeArea(
       child: Scaffold(
@@ -43,31 +47,13 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 5.heightBox,
                 Consumer<DbService>(
                   builder: (context, dbservice, child) {
-                    return FutureBuilder(
-                      future: dbservice.getuserdata(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          UserModel user = snapshot.data as UserModel;
-                          return (user.name == ""
-                                  ? "#${user.employeeId}"
-                                  : user.name)
-                              .text
-                              .capitalize
-                              .semiBold
-                              .size(18)
-                              .black
-                              .make();
-                        } else {
-                          return const LinearProgressIndicator()
-                              .box
-                              .width(60)
-                              .make()
-                              .box
-                              .padding(const EdgeInsets.only(left: 3))
-                              .make();
-                        }
-                      },
-                    );
+                    return dbservice.userModel == null
+                        ? const LinearProgressIndicator().box.width(50).make()
+                        : (dbservice.userModel!.name.text
+                            .size(20)
+                            .bold
+                            .gray500
+                            .make());
                   },
                 ),
                 30.heightBox,
@@ -78,7 +64,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                     .bold
                     .make(),
                 StreamBuilder(
-                  stream: Stream.periodic(Duration(seconds: 1)),
+                  stream: Stream.periodic(const Duration(seconds: 1)),
                   builder: (context, snapshot) {
                     return DateFormat("hh:mm:ss a")
                         .format(DateTime.now())
@@ -95,7 +81,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 40.heightBox,
                 Builder(builder: (context) {
                   return SlideAction(
-                    text: attendanceservice.attendanceModel?.checkin == null
+                    text: attendanceservice.checkModel?.createdin == null
                         ? "Slide to check in"
                         : "slide to check out",
                     textStyle: const TextStyle(
@@ -106,7 +92,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                     innerColor: Colors.redAccent,
                     key: key,
                     onSubmit: () async {
-                      await attendanceservice.markAttendance(context,"");
+                      await attendanceservice.markAttendance(context);
+
                       key.currentState!.reset();
                     },
                   );
@@ -141,11 +128,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                 .semiBold
                                 .color(Colors.black54)
                                 .make(),
-                            (attendanceservice.attendanceModel?.checkin ??
+                            /*(attendanceservice.attendanceModel?.checkin ??
                                     "__/__")
                                 .text
                                 .size(25)
-                                .make(),
+                                .make(),*/
                           ],
                         ),
                       ),
@@ -159,11 +146,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                 .semiBold
                                 .color(Colors.black54)
                                 .make(),
-                            (attendanceservice.attendanceModel?.checkout ??
+                            /* (attendanceservice.attendanceModel?.checkout ??
                                     "__/__")
                                 .text
                                 .size(25)
-                                .make(),
+                                .make(),*/
                           ],
                         ),
                       ),
@@ -198,11 +185,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                 .semiBold
                                 .color(Colors.black54)
                                 .make(),
-                            (attendanceservice.attendanceModel?.checkin ??
+                            /*(attendanceservice.attendanceModel?.checkin ??
                                     "__/__")
                                 .text
                                 .size(25)
-                                .make(),
+                                .make(),*/
                           ],
                         ),
                       ),
@@ -216,11 +203,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                 .semiBold
                                 .color(Colors.black54)
                                 .make(),
-                            (attendanceservice.attendanceModel?.checkout ??
+                            /*(attendanceservice.attendanceModel?.checkout ??
                                     "__/__")
                                 .text
                                 .size(25)
-                                .make(),
+                                .make(),*/
                           ],
                         ),
                       ),
@@ -255,11 +242,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                 .semiBold
                                 .color(Colors.black54)
                                 .make(),
-                            (attendanceservice.attendanceModel?.checkin ??
+                            /*(attendanceservice.attendanceModel?.checkin ??
                                     "__/__")
                                 .text
                                 .size(25)
-                                .make(),
+                                .make(),*/
                           ],
                         ),
                       ),
@@ -273,11 +260,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                 .semiBold
                                 .color(Colors.black54)
                                 .make(),
-                            (attendanceservice.attendanceModel?.checkout ??
+                            /* (attendanceservice.attendanceModel?.checkout ??
                                     "__/__")
                                 .text
                                 .size(25)
-                                .make(),
+                                .make(),*/
                           ],
                         ),
                       ),
@@ -312,11 +299,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                 .semiBold
                                 .color(Colors.black54)
                                 .make(),
-                            (attendanceservice.attendanceModel?.checkin ??
+                            /* (attendanceservice.attendanceModel?.checkin ??
                                     "__/__")
                                 .text
                                 .size(25)
-                                .make(),
+                                .make(),*/
                           ],
                         ),
                       ),
@@ -330,11 +317,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                 .semiBold
                                 .color(Colors.black54)
                                 .make(),
-                            (attendanceservice.attendanceModel?.checkout ??
+                            /* (attendanceservice.attendanceModel?.checkout ??
                                     "__/__")
                                 .text
                                 .size(25)
-                                .make(),
+                                .make(),*/
                           ],
                         ),
                       ),
@@ -369,11 +356,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                 .semiBold
                                 .color(Colors.black54)
                                 .make(),
-                            (attendanceservice.attendanceModel?.checkin ??
+                            /* (attendanceservice.attendanceModel?.checkin ??
                                     "__/__")
                                 .text
                                 .size(25)
-                                .make(),
+                                .make(),*/
                           ],
                         ),
                       ),
@@ -387,11 +374,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                 .semiBold
                                 .color(Colors.black54)
                                 .make(),
-                            (attendanceservice.attendanceModel?.checkout ??
+                            /*(attendanceservice.attendanceModel?.checkout ??
                                     "__/__")
                                 .text
                                 .size(25)
-                                .make(),
+                                .make(),*/
                           ],
                         ),
                       ),

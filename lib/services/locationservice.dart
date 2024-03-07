@@ -1,5 +1,4 @@
 import 'package:location/location.dart';
-import 'package:flutter/material.dart';
 
 class LocationService {
   Location location = Location();

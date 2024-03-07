@@ -95,10 +95,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             )
                           : ElevatedButton(
                               onPressed: () {
-                                authServiceProvider.registerEmployee(
+                               /* authServiceProvider.registerEmployee(
                                     _emailController.text.trim(),
                                     _passwordController.text.trim(),
-                                    context);
+                                    context);*/
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.redAccent,

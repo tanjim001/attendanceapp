@@ -1,16 +1,12 @@
 import 'dart:math';
-
-import 'package:attendenceapp/constants/constants.dart';
-import 'package:attendenceapp/models/dbmodel.dart';
 import 'package:attendenceapp/models/user_model.dart';
-import 'package:attendenceapp/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'package:velocity_x/velocity_x.dart';
 class DbService extends ChangeNotifier {
   final SupabaseClient _supabase = Supabase.instance.client;
-  UserModel? userModel;
-  List<DepartmentModel> allDepartment = [];
+  ProfileModel? _userModel;
+  ProfileModel? get userModel => _userModel;
   int? employeeDepartment;
 
   String generateRandomEmployeeId() {
@@ -22,43 +18,22 @@ class DbService extends ChangeNotifier {
     return randomString;
   }
 
-  Future insertNewUser(String email, var id) async {
-    await _supabase.from(Constants.employees).insert({
-      'id': id,
-      'name': '',
-      'email': email,
-      'employee_id': generateRandomEmployeeId(),
-      'department': null,
-    });
+  void updateData(ProfileModel userModel) {
+    _userModel = userModel;
+    notifyListeners(); // Notify listeners about the change
   }
 
-  Future<void> getAllDepartment() async {
-    final List result = await _supabase.from(Constants.departments).select();
-    allDepartment = result
-        .map((department) => DepartmentModel.fromJson(department))
-        .toList();
-    notifyListeners();
-  }
-
-  Future<UserModel> getuserdata() async {
-    final userdata = await _supabase
-        .from(Constants.employees)
-        .select()
-        .eq('id', _supabase.auth.currentUser!.id)
-        .single();
-    userModel = UserModel.fromJson(userdata);
-    employeeDepartment == null
-        ? employeeDepartment = userModel?.department
-        : null;
-    return userModel!;
-  }
-
-  Future updateProfile(String name, BuildContext context) async {
-    await _supabase
-        .from(Constants.employees)
-        .update({'name': name, 'department': employeeDepartment}).eq(
-            'id', _supabase.auth.currentUser!.id);
-    Utils.showSnackBar("profile update succesful", context);
-    notifyListeners();
+  Future<ProfileModel?> getprofiledata() async {
+    ProfileModel? usermodel;
+    try {
+      final userdata = await _supabase.from("profile").select('*').single();
+      usermodel = ProfileModel.fromJson(userdata);
+      updateData(usermodel);
+      
+    } catch (error) {
+      print('Error fetching profile data: $error');
+      return null;
+    }
+    return null;
   }
 }

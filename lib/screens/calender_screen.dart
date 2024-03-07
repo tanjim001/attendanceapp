@@ -34,9 +34,9 @@ class _CalenderScreenState extends State<CalenderScreen> {
                           .bold
                           .color(Vx.gray400)
                           .make(),
-                      attendanceService.attendanceHistoryMonth.text.semiBold
-                          .size(18)
-                          .make(),
+                     // attendanceService.attendanceHistoryMonth.text.semiBold
+                          //.size(18)
+                          //.make(),
                     ],
                   ),
                   ElevatedButton(
@@ -48,13 +48,13 @@ class _CalenderScreenState extends State<CalenderScreen> {
                       );
                       String pickedMonth =
                           DateFormat("MMMM yyyy").format(selectedDate);
-                      attendanceService.attendanceHistoryMonth = pickedMonth;
+                      //attendanceService.attendanceHistoryMonth = pickedMonth;
                     },
                     child: "Pick a month".text.make(),
                   ),
                 ],
               ).box.p16.make(),
-              FutureBuilder(
+              /*FutureBuilder(
                 future: attendanceService.getAttendanceHistory(),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -131,7 +131,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
                     return "No data available".text.make();
                   }
                 },
-              ),
+              ),*/
             ],
           ),
         ),

@@ -1,4 +1,7 @@
-class AttendanceModel {
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
+/*class AttendanceModel {
   final String id;
   final String date;
   final String checkin;
@@ -27,4 +30,24 @@ class AttendanceModel {
       checkOutLocation: data["check_out_location"],
     );
   }
+}*/
+class Attendance {
+  final String id;
+  final String date;
+  final DateTime createdat;
+  final String users;
+
+  Attendance({required this.id, required this.date, required this.createdat,required this.users});
+  
+factory Attendance.fromJson(Map<String, dynamic> data) {
+    return Attendance(
+      id: data['id'],
+      date: data['date'],
+      users:data['users'],
+      createdat: DateTime.parse(data["created_at"]),
+
+
+    );
+  }
+ 
 }

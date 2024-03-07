@@ -119,14 +119,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-                /*TextButton(
+                TextButton(
                     onPressed: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const RegisterScreen()));
                     },
-                    child: const Text("Are you a new Employee ? Register here"))*/
+                    child: const Text("Are you a new Employee ? Register here"))
               ],
             ),
           ),

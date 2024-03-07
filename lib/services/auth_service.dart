@@ -17,7 +17,7 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future registerEmployee(
+  /*Future registerEmployee(
       String email, String password, BuildContext context) async {
     try {
       setIsLoading = true;
@@ -35,7 +35,7 @@ class AuthService extends ChangeNotifier {
       setIsLoading = false;
       Utils.showSnackBar(e.toString(), context, color: Colors.red);
     }
-  }
+  }*/
 
   Future loginEmployee(
       String email, String password, BuildContext context) async {
@@ -49,6 +49,7 @@ class AuthService extends ChangeNotifier {
       setIsLoading = false;
     } catch (e) {
       setIsLoading = false;
+      // ignore: use_build_context_synchronously
       Utils.showSnackBar(e.toString(), context, color: Colors.red);
     }
   }
